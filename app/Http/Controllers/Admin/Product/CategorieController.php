@@ -20,7 +20,7 @@ class CategorieController extends Controller
 
         $categories = Categorie::where("name", "LIKE", "%$search%")
             ->orderBy("position", "ASC")
-            ->paginate(20);
+            ->paginate(10);
 
         return response()->json([
             "total" => $categories->total(),
@@ -28,20 +28,19 @@ class CategorieController extends Controller
         ]);
     }
 
-    public function config() {
+    public function config()
+    {
         $categories_first = Categorie::where("categorie_second_id", null)
             ->where("categorie_third_id", null)
-            ->orderBy("position", "ASC")
             ->get();
-        $categories_seconds = Categorie::where("categorie_second_id","<>", null)
+        $categories_seconds = Categorie::where("categorie_second_id", "<>", null)
             ->where("categorie_third_id", null)
-            ->orderBy("position", "ASC")
             ->get();
 
-            return response()->json([
-                "categories_first" => $categories_first,
-                "categories_seconds" => $categories_seconds,
-            ]);
+        return response()->json([
+            "categories_first" => $categories_first,
+            "categories_seconds" => $categories_seconds,
+        ]);
     }
 
     /**
@@ -68,7 +67,7 @@ class CategorieController extends Controller
     {
         $categorie = Categorie::findOrFail($id);
 
-        return response()->json(["categirie" => CategorieResource::make($categorie)]);
+        return response()->json(["categorie" => CategorieResource::make($categorie)]);
     }
 
     /**
