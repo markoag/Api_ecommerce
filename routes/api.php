@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Product\AttributeProductController;
 use App\Http\Controllers\Admin\Product\CategorieController;
+use App\Http\Controllers\Admin\SliderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -44,12 +45,18 @@ Route::group([
     "middleware" => "auth:api",
     "prefix" => "admin",
 ], function ($router) {
+    // Rutas de las categorías
     Route::get("categories/config", [CategorieController::class, "config"]);
     Route::resource("categories", CategorieController::class);
     Route::post("categories/{id}", [CategorieController::class, "update"]);
     
+    // Rutas de las propiedades y atributos
     Route::post("properties", [AttributeProductController::class, "store_propertie"]);
     Route::put("properties/{id}", [AttributeProductController::class, "update_propertie"]);
     Route::delete("properties/{id}", [AttributeProductController::class, "destroy_propertie"]);
     Route::resource("attributes", AttributeProductController::class);
+
+    // Rutas de los sliders
+    Route::resource("sliders", SliderController::class);
+    Route::post("sliders/{id}", [SliderController::class, "update"]);
 });
