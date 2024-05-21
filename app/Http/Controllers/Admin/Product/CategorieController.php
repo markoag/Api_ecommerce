@@ -20,6 +20,7 @@ class CategorieController extends Controller
 
         $categories = Categorie::where("name", "LIKE", "%$search%")
             ->orderBy("position", "ASC")
+            ->orderBy("type_categorie","ASC")
             ->paginate(10);
 
         return response()->json([
