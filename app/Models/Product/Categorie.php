@@ -34,10 +34,22 @@ class Categorie extends Model
     }
     public function categorie_second()
     {
-        return $this->belongsTo(Categorie::class,"categorie_second_id");
+        return $this->belongsTo(Categorie::class, "categorie_second_id");
     }
     public function categorie_third()
     {
-        return $this->belongsTo(Categorie::class,"categorie_third_id");
+        return $this->belongsTo(Categorie::class, "categorie_third_id");
+    }
+    public function product_categorie_first()
+    {
+        return $this->hasMany(Product::class, "categorie_first_id");
+    }
+    public function product_categorie_second()
+    {
+        return $this->hasMany(Product::class, "categorie_second_id");
+    }
+    public function product_categorie_third()
+    {
+        return $this->hasMany(Product::class, "categorie_third_id");
     }
 }

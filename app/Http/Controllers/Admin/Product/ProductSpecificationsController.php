@@ -20,6 +20,7 @@ class ProductSpecificationsController extends Controller
         return response()->json([
             "specifications" => $specifications->map(function ($specification) {
                 return [
+                    "id" => $specification->id,
                     "product_id" => $specification->product_id,
                     "attribute_id" => $specification->attribute_id,
                     "attribute" => $specification->attribute ? [
@@ -31,7 +32,7 @@ class ProductSpecificationsController extends Controller
                         "name" => $specification->propertie->name,
                         "code" => $specification->propertie->code,
                     ] : null,
-                    "value" => $specification->value,
+                    "value_add" => $specification->value_add,
                 ];
             }),
         ]);
@@ -48,7 +49,7 @@ class ProductSpecificationsController extends Controller
         if ($request->propertie_id) {
             $query = $query->where("propertie_id", $request->propertie_id);
         } else {
-            $query = $query->where("value", $request->value);
+            $query = $query->where("value_add", $request->value_add);
         }
 
         $is_valid_specification = $query->first();
@@ -65,6 +66,7 @@ class ProductSpecificationsController extends Controller
         return response()->json([
             "message" => 200,
             "specification" => [
+                "id" => $product_specification->id,
                 "product_id" => $product_specification->product_id,
                 "attribute_id" => $product_specification->attribute_id,
                 "attribute" => $product_specification->attribute ? [
@@ -76,7 +78,7 @@ class ProductSpecificationsController extends Controller
                     "name" => $product_specification->propertie->name,
                     "code" => $product_specification->propertie->code,
                 ] : null,
-                "value" => $product_specification->value,
+                "value_add" => $product_specification->value_add,
             ],
         ]);
     }
@@ -95,15 +97,16 @@ class ProductSpecificationsController extends Controller
     public function update(Request $request, string $id)
     {
         $query = ProductSpecification::where("product_id", $request->product_id)
-            ->where("attribute_id", $request->attribute_id)
-            ->where("id", "<>", $id);
+            ->where("id", "<>", $id)
+            ->where("attribute_id", $request->attribute_id);
 
         if ($request->propertie_id) {
             $query = $query->where("propertie_id", $request->propertie_id);
         } else {
-            $query = $query->where("value", $request->value);
+            $query = $query->where("value_add", $request->value_add);
         }
 
+        
         $is_valid_specification = $query->first();
 
         if ($is_valid_specification) {
@@ -119,6 +122,7 @@ class ProductSpecificationsController extends Controller
         return response()->json([
             "message" => 200,
             "specification" => [
+                "id" => $product_specification->id,
                 "product_id" => $product_specification->product_id,
                 "attribute_id" => $product_specification->attribute_id,
                 "attribute" => $product_specification->attribute ? [
@@ -130,7 +134,7 @@ class ProductSpecificationsController extends Controller
                     "name" => $product_specification->propertie->name,
                     "code" => $product_specification->propertie->code,
                 ] : null,
-                "value" => $product_specification->value,
+                "value_add" => $product_specification->value_add,
             ],
         ]);
     }

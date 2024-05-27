@@ -20,7 +20,7 @@ class CategorieController extends Controller
 
         $categories = Categorie::where("name", "LIKE", "%$search%")
             ->orderBy("position", "ASC")
-            ->orderBy("type_categorie","ASC")
+            ->orderBy("type_categorie", "ASC")
             ->paginate(10);
 
         return response()->json([
@@ -98,9 +98,20 @@ class CategorieController extends Controller
     public function destroy(string $id)
     {
         $categorie = Categorie::findOrFail($id);
+        // Validar que la categoría no tenga productos asociados
+        if (
+            $categorie->product_categorie_first->count() > 0 ||
+            $categorie->product_categorie_second->count() > 0 ||
+            $categorie->product_categorie_third->count() > 0
+        ) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "La categoría no puede ser eliminada porque tiene productos asociados",
+            ]);
+        }
+
         $categorie->delete();
 
-        // Validar que la categoría no tenga productos asociados
         return response()->json(["message" => 200]);
     }
 }

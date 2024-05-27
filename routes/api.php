@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Product\CategorieController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Product\ProductSpecificationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsController;
+use App\Http\Controllers\Admin\Product\ProductVariationsNestedController;
 use App\Http\Controllers\Admin\SliderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -78,5 +79,6 @@ Route::group([
     // Rutas de las especificaciones y variaciones
     Route::get("variations/config", [ProductVariationsController::class, "config"]);
     Route::resource("variations", ProductVariationsController::class);
+    Route::resource("nested_variations", ProductVariationsNestedController::class);
     Route::resource("specifications", ProductSpecificationsController::class);
 });

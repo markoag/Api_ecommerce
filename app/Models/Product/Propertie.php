@@ -27,4 +27,10 @@ class Propertie extends Model
         date_default_timezone_set(("America/Guayaquil"));
         $this->attributes['updated_at'] = Carbon::now();
     }
+    public function specifications() {
+        return $this->hasMany(ProductSpecification::class);
+    }
+    public function variations() {
+        return $this->hasMany(ProductVariation::class);
+    }
 }

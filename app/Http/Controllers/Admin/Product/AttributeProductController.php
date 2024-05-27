@@ -111,17 +111,6 @@ class AttributeProductController extends Controller
         ]);
     }
 
-    // Eliminar propiedades
-    public function destroy_propertie($id)
-    {
-        $propertie = Propertie::findOrFail($id);
-        $propertie->delete();
-
-        return response()->json([
-            "message" => 200,
-        ]);
-    }
-
     /**
      * Display the specified resource.
      */
@@ -167,7 +156,31 @@ class AttributeProductController extends Controller
     public function destroy(string $id)
     {
         $attribute = Attribute::findOrFail($id);
-        $attribute->delete(); // Validar que la categoría no tenga productos asociados
+        // Validar que el atributo no tenga productos asociados
+        if ($attribute->specifications->count() > 0 || $attribute->variations->count() > 0) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El atributo no puede ser eliminado porque tiene productos asociados",
+            ]);
+        }
+        $attribute->delete();
+
+        return response()->json([
+            "message" => 200,
+        ]);
+    }
+
+    // Eliminar propiedades
+    public function destroy_propertie($id)
+    {
+        $propertie = Propertie::findOrFail($id);
+        if ($propertie->specifications->count() > 0 || $propertie->variations->count() > 0) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El subatributo no puede ser eliminado porque tiene productos asociados",
+            ]);
+        }
+        $propertie->delete();
 
         return response()->json([
             "message" => 200,

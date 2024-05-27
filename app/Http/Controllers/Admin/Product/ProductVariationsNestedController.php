@@ -7,7 +7,7 @@ use App\Models\Product\Attribute;
 use App\Models\Product\ProductVariation;
 use Illuminate\Http\Request;
 
-class ProductVariationsController extends Controller
+class ProductVariationsNestedController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,10 @@ class ProductVariationsController extends Controller
     public function index()
     {
         $product_id = request()->product_id;
+        $product_variation_id = request()->product_variation_id;
 
         $variations = ProductVariation::where("product_id", $product_id)
-            ->where("product_variation_id", null)
+            ->where("product_variation_id", $product_variation_id)
             ->orderBy("id", "desc")->get();
 
         return response()->json([
@@ -38,47 +39,7 @@ class ProductVariationsController extends Controller
                     "value_add" => $variation->value_add,
                     "price_add" => $variation->price_add,
                     "stock" => $variation->stock,
-                ];
-            }),
-        ]);
-    }
-
-    public function config()
-    {
-        $attributes_specifications = Attribute::where("state", 1)->orderBy("id", "desc")->get();
-        $attributes_variations = Attribute::where("state", 1)->whereIn("type_attribute", [1, 3])->orderBy("id", "desc")->get();
-
-        return response()->json([
-            "attributes_specifications" => $attributes_specifications->map(function ($specification) {
-                return [
-                    "id" => $specification->id,
-                    "name" => $specification->name,
-                    "type_attribute" => $specification->type_attribute,
-                    "state" => $specification->state,
-                    "created_at" => $specification->created_at->format("Y-m-d h:i:s"),
-                    "properties" => $specification->properties->map(function ($propertie) {
-                        return [
-                            "id" => $propertie->id,
-                            "name" => $propertie->name,
-                            "code" => $propertie->code,
-                        ];
-                    })
-                ];
-            }),
-            "attributes_variations" => $attributes_variations->map(function ($variation) {
-                return [
-                    "id" => $variation->id,
-                    "name" => $variation->name,
-                    "type_attribute" => $variation->type_attribute,
-                    "state" => $variation->state,
-                    "created_at" => $variation->created_at->format("Y-m-d h:i:s"),
-                    "properties" => $variation->properties->map(function ($propertie) {
-                        return [
-                            "id" => $propertie->id,
-                            "name" => $propertie->name,
-                            "code" => $propertie->code,
-                        ];
-                    })
+                    "product_variation_id" => $variation->product_variation_id,
                 ];
             }),
         ]);
@@ -90,11 +51,11 @@ class ProductVariationsController extends Controller
     public function store(Request $request)
     {
         $variations_exist = ProductVariation::where("product_id", $request->product_id)
-            ->where("product_variation_id", null)
+            ->where("product_variation_id", $request->product_variation_id)
             ->count();
         if ($variations_exist > 0) {
             $variations_attributes_exist = ProductVariation::where("product_id", $request->product_id)
-                ->where("product_variation_id", null)
+                ->where("product_variation_id", $request->product_variation_id)
                 ->where("attribute_id", $request->attribute_id)
                 ->count();
             if ($variations_attributes_exist == 0) {
@@ -105,7 +66,7 @@ class ProductVariationsController extends Controller
             }
         }
         $query = ProductVariation::where("product_id", $request->product_id)
-            ->where("product_variation_id", null)
+            ->where("product_variation_id", $request->product_variation_id)
             ->where("attribute_id", $request->attribute_id);
 
         if ($request->propertie_id) {
@@ -120,6 +81,21 @@ class ProductVariationsController extends Controller
             return response()->json([
                 "message" => 403,
                 "message_text" => "Ya existe una variación con estos datos",
+            ]);
+        }
+
+        $product_var = ProductVariation::find($request->product_variation_id);
+        $TOTAL_STOCK_VARIATION = $product_var ? $product_var->stock : 0;
+
+        $SUM_TOTAL_STOCK_NESTED = ProductVariation::where("product_id", $request->product_id)
+            ->where("product_variation_id", $request->product_variation_id)
+            ->sum("stock");
+        $SUM_TOTAL_STOCK_NESTED += $request->stock;
+
+        if ($SUM_TOTAL_STOCK_NESTED > $TOTAL_STOCK_VARIATION) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El stock de las variaciones anidadas no puede ser mayor al stock de la variación padre",
             ]);
         }
 
@@ -143,31 +119,9 @@ class ProductVariationsController extends Controller
                 "value_add" => $product_variation->value_add,
                 "price_add" => $product_variation->price_add,
                 "stock" => $product_variation->stock,
+                "product_variation_id" => $product_variation->product_variation_id,
             ],
         ]);
-        // $is_valid_variation = null;
-        // if ($request->propertie_id) {
-        //     $is_valid_variation = ProductVariation::where("product_id", $request->product_id)
-        //         ->where("attribute_id", $request->attribute_id)
-        //         ->where("propertie_id", $request->propertie_id)
-        //         ->first();
-        // } else {
-        //     $is_valid_variation = ProductVariation::where("product_id", $request->product_id)
-        //         ->where("attribute_id", $request->attribute_id)
-        //         ->where("value_add", $request->value_add)
-        //         ->first();
-        // }
-        // if ($is_valid_variation) {
-        //     return response()->json([
-        //         "message" => 403,
-        //         "message_text" => "Ya existe una variación con estos datos",
-        //     ]);
-        // }
-        // $product_variation = ProductVariation::create($request->all());
-
-        // return response()->json([
-        //     "message" => 200,
-        // ]);
     }
 
     /**
@@ -184,11 +138,11 @@ class ProductVariationsController extends Controller
     public function update(Request $request, string $id)
     {
         $variations_exist = ProductVariation::where("product_id", $request->product_id)
-            ->where("product_variation_id", null)
+            ->where("product_variation_id", $request->product_variation_id)
             ->count();
         if ($variations_exist > 0) {
             $variations_attributes_exist = ProductVariation::where("product_id", $request->product_id)
-                ->where("product_variation_id", null)
+                ->where("product_variation_id", $request->product_variation_id)
                 ->where("attribute_id", $request->attribute_id)
                 ->count();
             if ($variations_attributes_exist == 0) {
@@ -199,7 +153,7 @@ class ProductVariationsController extends Controller
             }
         }
         $query = ProductVariation::where("product_id", $request->product_id)
-            ->where("product_variation_id", null)
+            ->where("product_variation_id", $request->product_variation_id)
             ->where("attribute_id", $request->attribute_id)
             ->where("id", "<>", $id);
 
@@ -215,6 +169,22 @@ class ProductVariationsController extends Controller
             return response()->json([
                 "message" => 403,
                 "message_text" => "Ya existe una variación con estos datos",
+            ]);
+        }
+
+        $product_var = ProductVariation::find($request->product_variation_id);
+        $TOTAL_STOCK_VARIATION = $product_var ? $product_var->stock : 0;
+
+        $SUM_TOTAL_STOCK_NESTED = ProductVariation::where("product_id", $request->product_id)
+            ->where("id", "<>", $id)
+            ->where("product_variation_id", $request->product_variation_id)
+            ->sum("stock");
+        $SUM_TOTAL_STOCK_NESTED += $request->stock;
+
+        if ($SUM_TOTAL_STOCK_NESTED > $TOTAL_STOCK_VARIATION) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El stock de las variaciones anidadas no puede ser mayor al stock de la variación padre",
             ]);
         }
 
@@ -239,6 +209,7 @@ class ProductVariationsController extends Controller
                 "value_add" => $product_variation->value_add,
                 "price_add" => $product_variation->price_add,
                 "stock" => $product_variation->stock,
+                "product_variation_id" => $product_variation->product_variation_id,
             ],
         ]);
     }

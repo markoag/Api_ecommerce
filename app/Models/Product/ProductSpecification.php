@@ -15,7 +15,7 @@ class ProductSpecification extends Model
         "product_id",
         "attribute_id",
         "propertie_id",
-        "value",
+        "value_add",
     ];
     public function setCreatedAtAttribute($value)
     {

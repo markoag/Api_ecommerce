@@ -51,7 +51,7 @@ class BrandController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * Display the specified resource.
      */
@@ -89,7 +89,15 @@ class BrandController extends Controller
     public function destroy(string $id)
     {
         $brand = Brand::findOrFail($id);
-        $brand->delete(); // Validar que la categoría no tenga productos asociados
+        // Validar que la categoría no tenga productos asociados
+        if ($brand->products->count() > 0) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "La marca no puede ser eliminada porque tiene productos asociados",
+            ]);
+        }
+
+        $brand->delete();
 
         return response()->json([
             "message" => 200,
