@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Coupon\CouponController;
 use App\Http\Controllers\Admin\Product\AttributeProductController;
 use App\Http\Controllers\Admin\Product\BrandController;
 use App\Http\Controllers\Admin\Product\CategorieController;
@@ -81,4 +82,8 @@ Route::group([
     Route::resource("variations", ProductVariationsController::class);
     Route::resource("nested_variations", ProductVariationsNestedController::class);
     Route::resource("specifications", ProductSpecificationsController::class);
+
+    // Rutas de los cupones
+    Route::get("coupons/config", [CouponController::class, "config"]);
+    Route::resource("coupons", CouponController::class);
 });
