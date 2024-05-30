@@ -27,10 +27,13 @@ class SliderController extends Controller
                     "id" => $slider->id,
                     "title" => $slider->title,
                     "label" => $slider->label,
+                    "type" => $slider->type,
                     "subtitle" => $slider->subtitle,
                     "link" => $slider->link,
                     "state" => $slider->state,
                     "color" => $slider->color,
+                    "original_price" => $slider->original_price,
+                    "campaign_price" => $slider->campaign_price,
                     "image" => env("APP_URL") . "storage/" . $slider->image,
                 ];
             }),
@@ -61,10 +64,13 @@ class SliderController extends Controller
             "id" => $slider->id,
             "title" => $slider->title,
             "label" => $slider->label,
+            "type" => $slider->type,
             "subtitle" => $slider->subtitle,
             "link" => $slider->link,
             "state" => $slider->state,
             "color" => $slider->color,
+            "original_price" => $slider->original_price,
+            "campaign_price" => $slider->campaign_price,
             "image" => env("APP_URL") . "storage/" . $slider->image,
         ]]);
     }

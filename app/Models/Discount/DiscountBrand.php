@@ -1,29 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Discount;
 
+use App\Models\Product\Brand;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Slider extends Model
+class DiscountBrand extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
-        "title",
-        "label",
-        "type",
-        "subtitle",
-        "image",
-        "link",
-        "color",
-        "original_price",
-        "campaign_price",
-        "state",
+        "discount_id",
+        "brand_id",
     ];
-
     public function setCreatedAtAttribute($value)
     {
         date_default_timezone_set(("America/Guayaquil"));
@@ -33,5 +24,8 @@ class Slider extends Model
     {
         date_default_timezone_set(("America/Guayaquil"));
         $this->attributes['updated_at'] = Carbon::now();
+    }
+    public function brand() {
+        return $this->belongsTo(Brand::class);
     }
 }

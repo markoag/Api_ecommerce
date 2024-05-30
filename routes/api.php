@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Coupon\CouponController;
+use App\Http\Controllers\Admin\Discount\DiscountController;
 use App\Http\Controllers\Admin\Product\AttributeProductController;
 use App\Http\Controllers\Admin\Product\BrandController;
 use App\Http\Controllers\Admin\Product\CategorieController;
@@ -86,4 +87,8 @@ Route::group([
     // Rutas de los cupones
     Route::get("coupons/config", [CouponController::class, "config"]);
     Route::resource("coupons", CouponController::class);
+    
+    // Rutas de los descuentos
+    Route::post("discounts/index", [DiscountController::class, "index"]);
+    Route::resource("discounts", DiscountController::class);
 });
