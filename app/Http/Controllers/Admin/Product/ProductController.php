@@ -62,10 +62,12 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $isValid = Product::where("title", $request->title)->first();
+        $isValid = Product::where("title", $request->title)
+            ->orWhere("sku", $request->sku)
+            ->first();
         if ($isValid) {
             return response()->json([
-                "message" => 403, "message_text" => "El nombre del producto ya existe"
+                "message" => 403, "message_text" => "El nombre del producto o sku ya existe"
             ]);
         }
         if ($request->hasFile("portada")) {
@@ -121,10 +123,14 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $isValid = Product::where("id", "<>", $id)->where("title", $request->title)->first();
+        $isValid = Product::where("id", "<>", $id)
+            ->where(function ($query) use ($request) {
+                $query->where("title", $request->title)
+                    ->orWhere("sku", $request->sku);
+            })->first();
         if ($isValid) {
             return response()->json([
-                "message" => 403, "message_text" => "El nombre del producto ya existe"
+                "message" => 403, "message_text" => "El nombre del producto o sku ya existe"
             ]);
         }
 

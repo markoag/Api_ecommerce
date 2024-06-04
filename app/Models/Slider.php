@@ -15,6 +15,7 @@ class Slider extends Model
         "title",
         "label",
         "type",
+        "type_view",
         "subtitle",
         "image",
         "link",

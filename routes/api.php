@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Coupon\CouponController;
 use App\Http\Controllers\Admin\Discount\DiscountController;
 use App\Http\Controllers\Admin\Product\AttributeProductController;
@@ -10,9 +11,8 @@ use App\Http\Controllers\Admin\Product\ProductSpecificationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsNestedController;
 use App\Http\Controllers\Admin\SliderController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Ecommerce\HomeController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +56,7 @@ Route::group([
     Route::get("categories/config", [CategorieController::class, "config"]);
     Route::resource("categories", CategorieController::class);
     Route::post("categories/{id}", [CategorieController::class, "update"]);
-    
+
     // Rutas de las propiedades y atributos
     Route::post("properties", [AttributeProductController::class, "store_propertie"]);
     Route::put("properties/{id}", [AttributeProductController::class, "update_propertie"]);
@@ -87,8 +87,15 @@ Route::group([
     // Rutas de los cupones
     Route::get("coupons/config", [CouponController::class, "config"]);
     Route::resource("coupons", CouponController::class);
-    
+
     // Rutas de los descuentos
     Route::post("discounts/index", [DiscountController::class, "index"]);
     Route::resource("discounts", DiscountController::class);
+});
+
+Route::group([
+    "prefix" => "ecommerce",
+], function ($router) {
+    Route::get("home", [HomeController::class, "home"]);
+    Route::get("menus", [HomeController::class, "menus"]);
 });
