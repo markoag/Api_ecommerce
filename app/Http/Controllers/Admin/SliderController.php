@@ -36,6 +36,7 @@ class SliderController extends Controller
                     "original_price" => $slider->original_price,
                     "campaign_price" => $slider->campaign_price,
                     "image" => env("APP_URL") . "storage/" . $slider->image,
+                    "image2" => $slider->image2 ? env("APP_URL") . "storage/" . $slider->image2 : null,
                 ];
             }),
         ]);
@@ -49,6 +50,10 @@ class SliderController extends Controller
         if ($request->hasFile("imagen")) {
             $path = Storage::putFile("sliders", $request->file("imagen"));
             $request->request->add(["image" => $path]);
+        }
+        if ($request->hasFile("imagen2")) {
+            $path = Storage::putFile("sliders", $request->file("imagen2"));
+            $request->request->add(["image2" => $path]);
         }
         $slider = Slider::create($request->all());
         return response()->json(["message" => 200]);
@@ -74,6 +79,7 @@ class SliderController extends Controller
             "original_price" => $slider->original_price,
             "campaign_price" => $slider->campaign_price,
             "image" => env("APP_URL") . "storage/" . $slider->image,
+            "image2" => $slider->image2 ? env("APP_URL") . "storage/" . $slider->image2 : null,
         ]]);
     }
 
@@ -89,6 +95,13 @@ class SliderController extends Controller
             }
             $path = Storage::putFile("sliders", $request->file("imagen"));
             $request->request->add(["image" => $path]);
+        }
+        if ($request->hasFile("imagen2")) {
+            if ($slider->image2) {
+                Storage::delete($slider->image2);
+            }
+            $path = Storage::putFile("sliders", $request->file("imagen2"));
+            $request->request->add(["image2" => $path]);
         }
         $slider->update($request->all());
         return response()->json(["message" => 200]);

@@ -21,8 +21,8 @@ class DiscountResource extends JsonResource
             "type_campaign" => $this->resource->type_campaign,
             "type_discount" => $this->resource->type_discount,
             "discount" => $this->resource->discount,
-            "start_date" => Carbon::parse($this->resource->start_date)->format("Y-m-d"),
-            "end_date" => Carbon::parse($this->resource->end_date)->format("Y-m-d"),
+            "start_date" => Carbon::parse($this->resource->start_date)->format("Y-m-d H:i:s"),
+            "end_date" => Carbon::parse($this->resource->end_date)->format("Y-m-d H:i:s"),
             "discount_type" => $this->resource->discount_type,
             "state" => $this->resource->state,
             "created_at" => $this->resource->created_at->format("Y-m-d h:i A"), //AM o PM

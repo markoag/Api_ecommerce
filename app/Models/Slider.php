@@ -18,6 +18,7 @@ class Slider extends Model
         "type_view",
         "subtitle",
         "image",
+        "image2",
         "link",
         "color",
         "original_price",
