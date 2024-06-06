@@ -28,4 +28,7 @@ class DiscountBrand extends Model
     public function brand() {
         return $this->belongsTo(Brand::class);
     }
+    public function discount() {
+        return $this->belongsTo(Discount::class);
+    }
 }

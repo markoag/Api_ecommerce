@@ -2,6 +2,7 @@
 
 namespace App\Models\Product;
 
+use App\Models\Discount\DiscountProduct;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -57,6 +58,65 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class, "product_id");
+    }
+    public function discount_products()
+    {
+        return $this->hasMany(DiscountProduct::class, "product_id");
+    }
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class, "product_id")->where("product_variation_id", null);
+    }
+    public function getDiscountCategoryAttribute()
+    {
+        date_default_timezone_set(("America/Guayaquil"));
+        $discount = null;
+        foreach ($this->categorie_first->discount_categories as $discount_category) {
+            if (
+                $discount_category->discount
+                && $discount_category->discount->type_campaign == 1
+                && $discount_category->discount->state == 1
+                && Carbon::now()->between($discount_category->discount->start_date, Carbon::parse($discount_category->discount->end_date)->addDay(1))
+            ) {
+                $discount = $discount_category->discount;
+                break;
+            }
+        }
+        return $discount;
+    }
+    public function getDiscountProductAttribute()
+    {
+        date_default_timezone_set(("America/Guayaquil"));
+        $discount = null;
+        foreach ($this->discount_products as $discount_product) {
+            if (
+                $discount_product->discount
+                && $discount_product->discount->type_campaign == 1
+                && $discount_product->discount->state == 1
+                && Carbon::now()->between($discount_product->discount->start_date, Carbon::parse($discount_product->discount->end_date)->addDay(1))
+            ) {
+                $discount = $discount_product->discount;
+                break;
+            }
+        }
+        return $discount;
+    }
+    public function getDiscountBrandAttribute()
+    {
+        date_default_timezone_set(("America/Guayaquil"));
+        $discount = null;
+        foreach ($this->brand->discount_brands as $discount_brand) {
+            if (
+                $discount_brand->discount
+                && $discount_brand->discount->type_campaign == 1
+                && $discount_brand->discount->state == 1
+                && Carbon::now()->between($discount_brand->discount->start_date, Carbon::parse($discount_brand->discount->end_date)->addDay(1))
+            ) {
+                $discount = $discount_brand->discount;
+                break;
+            }
+        }
+        return $discount;
     }
 
     public function scopeFilterAdvanceProduct($query, $search, $categorie_first_id, $categorie_second_id, $categorie_third_id, $brand_id)

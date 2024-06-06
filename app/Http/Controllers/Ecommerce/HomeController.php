@@ -41,8 +41,6 @@ class HomeController extends Controller
             ->where("end_date", ">=", now())
             ->first();
 
-            // echo now();
-        
         $DISCOUNT_FLASH_PRODUCTS = collect([]);
 
         if ($DISCOUNT_FLASH) {
@@ -50,13 +48,13 @@ class HomeController extends Controller
                 $DISCOUNT_FLASH_PRODUCTS->push(ProductEcommerceResource::make($aux_product->product));
             }
             foreach ($DISCOUNT_FLASH->categories as $aux_category) {
-                $products_of_categories = Product::where("state",2)->where("categorie_first_id", $aux_category->categorie_id)->get();
+                $products_of_categories = Product::where("state", 2)->where("categorie_first_id", $aux_category->categorie_id)->get();
                 foreach ($products_of_categories as $product) {
                     $DISCOUNT_FLASH_PRODUCTS->push(ProductEcommerceResource::make($product));
                 }
             }
             foreach ($DISCOUNT_FLASH->brands as $aux_brand) {
-                $products_of_brands = Product::where("state",2)->where("brand_id", $aux_brand->brand_id)->get();
+                $products_of_brands = Product::where("state", 2)->where("brand_id", $aux_brand->brand_id)->get();
                 foreach ($products_of_brands as $product) {
                     $DISCOUNT_FLASH_PRODUCTS->push(ProductEcommerceResource::make($product));
                 }
