@@ -163,4 +163,38 @@ class HomeController extends Controller
             }),
         ]);
     }
+
+    public function show_product(Request $request, $slug)
+    {
+        $campaign_discount = $request->get("campaign_discount");
+        $discount = null;
+        if ($campaign_discount) {
+            $discount = Discount::where("code", $campaign_discount)->first();
+        }
+
+        $product = Product::where("slug", $slug)->where("state", 2)->first();
+
+        if (!$product) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "Producto no encontrado."
+            ]);
+        }
+
+        $products_relateds = Product::where("categorie_first_id", $product->categorie_first_id)
+            // ->where("categorie_second_id", $product->categorie_second_id)
+            // ->where("categorie_third_id", $product->categorie_third_id)
+            ->where("state", 2)
+            ->where("id", "!=", $product->id)
+            ->inRandomOrder()
+            ->limit(8)
+            ->get();
+
+        return response()->json([
+            "message" => 200,
+            "product" => ProductEcommerceResource::make($product),
+            "products_relateds" => ProductEcommerceCollection::make($products_relateds),
+            "discount_campaign" => $discount,
+        ]);
+    }
 }
