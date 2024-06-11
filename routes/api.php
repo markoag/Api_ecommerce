@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Product\ProductSpecificationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsNestedController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Ecommerce\CartController;
 use App\Http\Controllers\Ecommerce\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -100,4 +101,10 @@ Route::group([
     Route::get("menus", [HomeController::class, "menus"]);
 
     Route::get("product/{slug}", [HomeController::class, "show_product"]);
+
+    Route::group([
+        "middleware" => "auth:api",
+    ], function ($router) {
+        Route::resource("carts", CartController::class);
+    });
 });
