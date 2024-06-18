@@ -105,6 +105,7 @@ Route::group([
     Route::group([
         "middleware" => "auth:api",
     ], function ($router) {
+        Route::post("carts/apply_coupon", [CartController::class, "apply_coupon"]);
         Route::resource("carts", CartController::class);
     });
 });
