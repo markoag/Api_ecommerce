@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\Product\ProductVariationsNestedController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Ecommerce\CartController;
 use App\Http\Controllers\Ecommerce\HomeController;
+use App\Http\Controllers\Ecommerce\UserAddressController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -105,7 +106,12 @@ Route::group([
     Route::group([
         "middleware" => "auth:api",
     ], function ($router) {
+        // Rutas de los carritos
         Route::post("carts/apply_coupon", [CartController::class, "apply_coupon"]);
         Route::resource("carts", CartController::class);
+        
+        // Rutas de las direcciones de los usuarios
+        Route::get("user_address/config", [UserAddressController::class, "config"]);
+        Route::resource("user_address", UserAddressController::class);
     });
 });
