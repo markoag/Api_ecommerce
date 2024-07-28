@@ -5,17 +5,16 @@ namespace App\Models\Sale;
 use App\Models\Address\City;
 use App\Models\Address\Parish;
 use App\Models\Address\Province;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UserAddres extends Model
+class SaleAddres extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        "user_id",
+        "sale_id",
         "province_id",
         "city_id",
         "parish_id",
@@ -39,9 +38,9 @@ class UserAddres extends Model
     }
 
     // Relación de un usuario con muchas direcciones
-    public function user()
+    public function sale()
     {
-        return $this->belongsTo(User::class, "user_id");
+        return $this->belongsTo(Sale::class, "user_id");
     }
 
     // Relación de un usuario con muchas provincias

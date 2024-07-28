@@ -30,13 +30,11 @@ class AddressResource extends JsonResource
             ] : null,
             "city_id" => $this->resource->city_id,
             "city" => $this->resource->city ? [
-                "id" => $this->resource->city->id,
                 "code" => $this->resource->city->code,
                 "name" => $this->resource->city->name,
             ] : null,
             "parish_id" => $this->resource->parish_id,
             "parish" => $this->resource->parish ? [
-                "id" => $this->resource->parish->id,
                 "code" => $this->resource->parish->code,
                 "name" => $this->resource->parish->name,
             ] : null,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Ecommerce;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Ecommerce\Address\AddressCollection;
+use App\Http\Resources\Ecommerce\Address\AddressResource;
 use App\Models\Address\City;
 use App\Models\Address\Parish;
 use App\Models\Address\Province;
@@ -93,7 +94,7 @@ class UserAddressController extends Controller
         $addres->update($request->all());
 
         return response()->json([
-            "addres" => $addres
+            "addres" => AddressResource::make($addres)
         ]);
     }
 
