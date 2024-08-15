@@ -18,7 +18,7 @@ class Sale extends Model
         "total",
         "price",
         "description",
-        "n_transaction"
+        "n_transaction",
     ];
 
     public function setCreatedAtAttribute($value)

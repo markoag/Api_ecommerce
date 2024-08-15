@@ -116,6 +116,7 @@ Route::group([
         Route::resource("user_address", UserAddressController::class);
 
         // Rutas de las ventas
+        Route::get("sale/{id}", [SaleController::class, "show"]);
         Route::post("checkout", [SaleController::class, "store"]);
     });
 });
