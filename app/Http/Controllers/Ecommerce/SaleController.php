@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Ecommerce;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Ecommerce\Sale\SaleResource;
 use App\Mail\SaleMail;
+use App\Models\Product\Product;
+use App\Models\Product\ProductVariation;
 use App\Models\Sale\Cart;
 use App\Models\Sale\Sale;
 use App\Models\Sale\SaleAddres;
@@ -36,13 +38,37 @@ class SaleController extends Controller
         )->get();
 
         foreach ($carts as $key => $cart) {
+            $nCart = $cart;
             $new_detail = [];
-            $new_detail = $cart->toArray();
+            $new_detail = $nCart->toArray();
             $new_detail['sale_id'] = $sale->id;
             SaleDetail::create($new_detail);
 
+            // Actualizar el stock
+            if ($cart->product_variation_id) {
+                $variation = ProductVariation::findOrFail(
+                    $cart->product_variation_id
+                );
+                if ($variation->variation_father) {
+                    $variation->variation_father->update([
+                        'stock' => $variation->variation_father->stock - $cart->quantity,
+                    ]);
+                    $variation->update([
+                        'stock' => $variation->stock - $cart->quantity,
+                    ]);
+                } else {
+                    $variation->update([
+                        'stock' => $variation->stock - $cart->quantity,
+                    ]);
+                }
+            } else {
+                $product = Product::findOrFail($cart->product_id);
+                $product->update([
+                    'stock' => $product->stock - $cart->quantity,
+                ]);
+            }
             // Eliminar el carrito
-            
+            $cart->delete();
         }
         $sale_addres = $request->sale_address;
         $sale_addres['sale_id'] = $sale->id;
