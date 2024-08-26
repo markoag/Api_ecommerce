@@ -118,5 +118,10 @@ Route::group([
         // Rutas de las ventas
         Route::get("sale/{id}", [SaleController::class, "show"]);
         Route::post("checkout", [SaleController::class, "store"]);
+        
+        // Rutas de perfil de usuario
+        Route::get("profile_client/me", [AuthController::class, "me"]);
+        Route::get("profile_client/orders", [SaleController::class, "orders"]);
+        Route::put("profile_client", [AuthController::class, "update"]);
     });
 });

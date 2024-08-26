@@ -67,6 +67,24 @@ class AuthController extends Controller
         return response()->json($user, 201);
     }
 
+    public function update(Request $request)
+    {
+
+        $is_exists_email = User::where('id', '<>', auth('api')->user()->id)->where('email', $request->email)->first();
+        if ($is_exists_email) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El usuario ya existe"
+            ]);
+        }
+
+        $user = User::find(auth('api')->user()->id);
+        $user->update($request->all());
+        return response()->json([
+            "message" => 200,
+        ]);
+    }
+
     public function verified_email(Request $request)
     {
         $user = User::where('email', $request->email)->first();
@@ -146,7 +164,17 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth('api')->user());
+        $user = User::find(auth('api')->user()->id);
+        return response()->json([
+            'name' => $user->name,
+            'last_name' => $user->last_name,
+            'phone' => $user->phone,
+            'email' => $user->email,
+            'bio' => $user->bio,
+            'fb' => $user->fb,
+            'gender' => $user->gender,
+            'address_user' => $user->address_user,
+        ]);
     }
 
     /**
