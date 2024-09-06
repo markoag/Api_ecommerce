@@ -69,6 +69,23 @@ class AuthController extends Controller
 
     public function update(Request $request)
     {
+        //Validar contraseña antigua
+        if ($request->old_password) {
+            if (!auth('api')->attempt(['email' => auth('api')->user()->email, 'password' => $request->old_password])) {
+                return response()->json([
+                    "message" => 403,
+                    "message_text" => "Contraseña antigua incorrecta"
+                ]);
+            }
+        }
+        //Actualizar nueva contraseña
+        if ($request->new_password) {
+            $user = User::find(auth('api')->user()->id);
+            $user->update(['password' => bcrypt($request->new_password)]);
+            return response()->json([
+                "message" => 200,
+            ]);
+        }
 
         $is_exists_email = User::where('id', '<>', auth('api')->user()->id)->where('email', $request->email)->first();
         if ($is_exists_email) {
@@ -174,6 +191,7 @@ class AuthController extends Controller
             'fb' => $user->fb,
             'gender' => $user->gender,
             'address_user' => $user->address_user,
+            'avatar' => $user->avatar,
         ]);
     }
 

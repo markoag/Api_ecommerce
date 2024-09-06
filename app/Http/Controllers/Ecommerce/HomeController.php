@@ -8,6 +8,7 @@ use App\Http\Resources\Ecommerce\Product\ProductEcommerceResource;
 use App\Models\Discount\Discount;
 use App\Models\Product\Categorie;
 use App\Models\Product\Product;
+use App\Models\Sale\Review;
 use App\Models\Slider;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -190,11 +191,25 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
 
+        $reviews = Review::where("product_id", $product->id)->get();
+
         return response()->json([
             "message" => 200,
             "product" => ProductEcommerceResource::make($product),
             "products_relateds" => ProductEcommerceCollection::make($products_relateds),
             "discount_campaign" => $discount,
+            "reviews" => $reviews->map(function ($review) {
+                return [
+                    "id" => $review->id,
+                    "user" => [
+                        "full_name" => $review->user->name . ' ' . $review->user->last_name,
+                        "avatar" => $review->user->avatar ? env("APP_URL") . "storage/" . $review->user->avatar : null,
+                    ],
+                    "message" => $review->message,
+                    "rating" => $review->rating,
+                    "created_at" => $review->created_at->format("M d Y H:i"),
+                ];
+            }),
         ]);
     }
 }

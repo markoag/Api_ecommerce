@@ -60,6 +60,7 @@ class SaleResource extends JsonResource
                     }
                 }
                 return [
+                    "id" => $sale_detail->id,
                     "product_id" => $sale_detail->product_id,
                     "product" => [
                         "id" => $sale_detail->product->id,
@@ -94,6 +95,7 @@ class SaleResource extends JsonResource
                     "subtotal" => $sale_detail->subtotal,
                     "total" => $sale_detail->total,
                     "created_at" => $sale_detail->created_at->format("Y-m-d H:i A"),
+                    "review" => $sale_detail->review,
                 ];
             }),
             "sale_address" => $this->resource->sale_address,

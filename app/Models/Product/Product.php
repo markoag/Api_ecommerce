@@ -3,6 +3,7 @@
 namespace App\Models\Product;
 
 use App\Models\Discount\DiscountProduct;
+use App\Models\Sale\Review;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -70,6 +71,18 @@ class Product extends Model
     public function specifications()
     {
         return $this->hasMany(ProductSpecification::class, "product_id");
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, "product_id");
+    }
+    public function getReviewsCountAttribute()
+    {
+        return $this->reviews->count();
+    }
+    public function getReviewsAvgAttribute()
+    {
+        return $this->reviews->avg("rating");
     }
     public function getDiscountCategoryAttribute()
     {
