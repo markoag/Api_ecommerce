@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\ForgotPasswordMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -96,6 +97,13 @@ class AuthController extends Controller
         }
 
         $user = User::find(auth('api')->user()->id);
+        if ($request->hasFile("file_image")) {
+            if ($user->avatar) {
+                Storage::delete($user->avatar);
+            }
+            $path = Storage::putFile("users", $request->file("file_image"));
+            $request->request->add(["avatar" => $path]);
+        }
         $user->update($request->all());
         return response()->json([
             "message" => 200,
@@ -191,7 +199,7 @@ class AuthController extends Controller
             'fb' => $user->fb,
             'gender' => $user->gender,
             'address_user' => $user->address_user,
-            'avatar' => $user->avatar,
+            'avatar' => $user->avatar ? env('APP_URL').'storage/'.$user->avatar : 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
         ]);
     }
 
@@ -240,6 +248,7 @@ class AuthController extends Controller
             'user' => [
                 'full_name' => auth('api')->user()->name . ' ' . auth('api')->user()->last_name,
                 'email' => auth('api')->user()->email,
+                'avatar' => auth('api')->user()->avatar ? env('APP_URL').'storage/'.auth('api')->user()->avatar : 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
             ]
         ]);
     }

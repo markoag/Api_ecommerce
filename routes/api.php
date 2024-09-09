@@ -123,7 +123,7 @@ Route::group([
         // Rutas de perfil de usuario
         Route::get("profile_client/me", [AuthController::class, "me"]);
         Route::get("profile_client/orders", [SaleController::class, "orders"]);
-        Route::put("profile_client", [AuthController::class, "update"]);
+        Route::post("profile_client", [AuthController::class, "update"]);
 
         Route::resource("reviews", ReviewController::class);
     });
