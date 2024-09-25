@@ -33,4 +33,7 @@ class Propertie extends Model
     public function variations() {
         return $this->hasMany(ProductVariation::class);
     }
+    public function attribute() {
+        return $this->belongsTo(Attribute::class, "attribute_id");
+    }
 }

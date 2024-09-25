@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Ecommerce\Product\ProductEcommerceCollection;
 use App\Http\Resources\Ecommerce\Product\ProductEcommerceResource;
 use App\Models\Discount\Discount;
+use App\Models\Product\Brand;
 use App\Models\Product\Categorie;
 use App\Models\Product\Product;
+use App\Models\Product\Propertie;
 use App\Models\Sale\Review;
 use App\Models\Slider;
 use Carbon\Carbon;
@@ -202,8 +204,8 @@ class HomeController extends Controller
                 return [
                     "id" => $review->id,
                     "user" => [
-                        "full_name" => $review->user->name . ' ' . $review->user->last_name,                        
-                        'avatar' => $review->user->avatar ? env('APP_URL').'storage/'.$review->user->avatar : 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
+                        "full_name" => $review->user->name . ' ' . $review->user->last_name,
+                        'avatar' => $review->user->avatar ? env('APP_URL') . 'storage/' . $review->user->avatar : 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
                     ],
                     "message" => $review->message,
                     "rating" => $review->rating,
@@ -211,5 +213,62 @@ class HomeController extends Controller
                 ];
             }),
         ]);
+    }
+
+    public function config_filter_advance()
+    {
+        $categories = Categorie::withCount(["product_categorie_first"])
+            ->where("categorie_second_id", null)->where("categorie_third_id", null)
+            ->get();
+
+        $brands = Brand::withCount(["products"])->where("state", 1)->orderBy("name","asc")->get();
+        // Validar que solo se presenten las marcas que tengan productos
+        $brands = $brands->filter(function ($brand) {
+            return $brand->products_count > 0;
+        })->values();
+
+        $colors = Propertie::where("code", "<>", null)->get();
+
+        $colors = $colors->map(function ($color) {
+            if ($color->attribute && $color->attribute->variations) {
+                $color->products_count = $color->attribute->variations->unique("product_id")->count();
+            } else {
+                $color->products_count = 0; // O cualquier valor por defecto que consideres adecuado
+            }
+            return $color;
+        })->filter(function ($color) {
+            return $color->products_count > 0;
+        })->values()->toArray();
+
+        $products_relateds = Product::where("state", 2)->inRandomOrder()->limit(4)->get();
+
+        return response()->json([
+            "categories" => $categories->map(function ($category) {
+                return [
+                    "id" => $category->id,
+                    "name" => $category->name,
+                    "products_count" => $category->product_categorie_first_count,
+                    "image" => env("APP_URL") . "storage/" . $category->image,
+                ];
+            }),
+            "brands" => $brands->map(function ($brand) {
+                return [
+                    "id" => $brand->id,
+                    "name" => $brand->name,
+                    "products_count" => $brand->products_count,
+                ];
+            }),
+            "colors" => $colors,
+            "products_relateds" => ProductEcommerceCollection::make($products_relateds),
+        ]);
+    }
+    public function filter_advance_product(Request $request) {
+
+        $products = Product::orderBy("id", "desc")->get();
+
+        return response()->json([
+            "products" => ProductEcommerceCollection::make($products),
+        ]);
+
     }
 }
