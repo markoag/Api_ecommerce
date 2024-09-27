@@ -135,7 +135,6 @@ class Product extends Model
         }
         return $discount;
     }
-
     public function scopeFilterAdvanceProduct($query, $search, $categorie_first_id, $categorie_second_id, $categorie_third_id, $brand_id)
     {
         if ($search) {
@@ -152,6 +151,26 @@ class Product extends Model
         }
         if ($brand_id) {
             $query->where("brand_id", $brand_id);
+        }
+
+        return $query;
+    }
+    public function scopefilterAdvanceEcommerce($query, $categories_selected, $colors_product_selected, $brand_selected)
+    {
+
+        if ($categories_selected && sizeof($categories_selected) > 0) {
+            $query->whereIn("categorie_first_id", $categories_selected);
+        }
+        if ($colors_product_selected && sizeof($colors_product_selected) > 0) {
+            $query->whereIn("id", $colors_product_selected);
+            //$query->whereHas("variations", function ($q) use ($colors_selected) {
+            //$q->whereHas("propertie", function ($sq) use ($colors_selected) {
+            //$sq->whereIn("code", $colors_selected);
+            //});
+            //});
+        }
+        if ($brand_selected && sizeof($brand_selected) > 0) {
+            $query->whereIn("brand_id", $brand_selected);
         }
 
         return $query;

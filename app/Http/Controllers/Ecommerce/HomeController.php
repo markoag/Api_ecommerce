@@ -221,17 +221,27 @@ class HomeController extends Controller
             ->where("categorie_second_id", null)->where("categorie_third_id", null)
             ->get();
 
-        $brands = Brand::withCount(["products"])->where("state", 1)->orderBy("name","asc")->get();
+        $brands = Brand::withCount(["products"])->where("state", 1)
+            ->whereHas("products", function ($query) {
+                $query->where("state", 2);
+            })
+            ->orderBy("name", "asc")->get();
         // Validar que solo se presenten las marcas que tengan productos
         $brands = $brands->filter(function ($brand) {
             return $brand->products_count > 0;
         })->values();
 
-        $colors = Propertie::where("code", "<>", null)->get();
+        $colors = Propertie::where("code", "<>", null)
+            ->whereHas('variations', function ($query) {
+                $query->whereHas('product', function ($query) {
+                    $query->where('state', 2);
+                });
+            })
+            ->get();
 
         $colors = $colors->map(function ($color) {
-            if ($color->attribute && $color->attribute->variations) {
-                $color->products_count = $color->attribute->variations->unique("product_id")->count();
+            if ($color->attribute && $color->variations) {
+                $color->products_count = $color->variations->unique("product_id")->count();
             } else {
                 $color->products_count = 0; // O cualquier valor por defecto que consideres adecuado
             }
@@ -262,13 +272,28 @@ class HomeController extends Controller
             "products_relateds" => ProductEcommerceCollection::make($products_relateds),
         ]);
     }
-    public function filter_advance_product(Request $request) {
+    public function filter_advance_product(Request $request)
+    {
 
-        $products = Product::orderBy("id", "desc")->get();
+        $categories_selected = $request->categories_selected;
+        $brand_selected = $request->brand_selected;
+        $colors_selected = $request->colors_selected;
+
+        $colors_product_selected = [];
+
+        if ($colors_selected && sizeof($colors_selected) > 0) {
+            $properties = Propertie::whereIn("id", $colors_selected)->get();
+            foreach ($properties as $property) {
+                foreach ($property->variations as $variation) {
+                    $colors_product_selected[] = $variation->product_id;
+                }
+            }
+        }
+
+        $products = Product::where("state", 2)->filterAdvanceEcommerce($categories_selected, $colors_product_selected, $brand_selected)->orderBy("id", "desc")->get();
 
         return response()->json([
             "products" => ProductEcommerceCollection::make($products),
         ]);
-
     }
 }
