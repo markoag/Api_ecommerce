@@ -278,9 +278,13 @@ class HomeController extends Controller
         $categories_selected = $request->categories_selected;
         $brand_selected = $request->brand_selected;
         $colors_selected = $request->colors_selected;
+        $min_price = $request->min_price;
+        $max_price = $request->max_price;
+        $price_view = $request->price_view;
+        $options_aditionals = $request->options_aditionals;
+        $search = $request->search;
 
         $colors_product_selected = [];
-
         if ($colors_selected && sizeof($colors_selected) > 0) {
             $properties = Propertie::whereIn("id", $colors_selected)->get();
             foreach ($properties as $property) {
@@ -290,7 +294,40 @@ class HomeController extends Controller
             }
         }
 
-        $products = Product::where("state", 2)->filterAdvanceEcommerce($categories_selected, $colors_product_selected, $brand_selected)->orderBy("id", "desc")->get();
+        $product_general_ids_array = [];
+        if ($options_aditionals && sizeof($options_aditionals) > 0 && in_array("campaing", $options_aditionals)) {
+
+            date_default_timezone_set("America/Guayaquil");
+            $discount = Discount::where("type_campaign", 1)
+                ->where("state", 1)
+                ->where("start_date", "<=", now())
+                ->where("end_date", ">=", now())
+                ->first();
+
+            if ($discount) {
+                foreach ($discount->products as $product_aux) {
+                    array_push($product_general_ids_array, $product_aux->product_id);
+                }
+                foreach ($discount->categories as $category_aux) {
+                    array_push($categories_selected, $category_aux->categorie_id);
+                }
+                foreach ($discount->brands as $brand_aux) {
+                    array_push($brand_selected, $brand_aux->brand_id);
+                }
+            }
+        }
+
+        $products = Product::where("state", 2)->filterAdvanceEcommerce(
+            $categories_selected,
+            $colors_product_selected,
+            $brand_selected,
+            $min_price,
+            $max_price,
+            $price_view,
+            $product_general_ids_array,
+            $options_aditionals,
+            $search
+        )->orderBy("id", "desc")->get();
 
         return response()->json([
             "products" => ProductEcommerceCollection::make($products),

@@ -155,8 +155,18 @@ class Product extends Model
 
         return $query;
     }
-    public function scopefilterAdvanceEcommerce($query, $categories_selected, $colors_product_selected, $brand_selected)
-    {
+    public function scopefilterAdvanceEcommerce(
+        $query,
+        $categories_selected,
+        $colors_product_selected,
+        $brand_selected,
+        $min_price,
+        $max_price,
+        $price_view,
+        $product_general_ids_array,
+        $options_aditionals,
+        $search
+    ) {
 
         if ($categories_selected && sizeof($categories_selected) > 0) {
             $query->whereIn("categorie_first_id", $categories_selected);
@@ -171,6 +181,22 @@ class Product extends Model
         }
         if ($brand_selected && sizeof($brand_selected) > 0) {
             $query->whereIn("brand_id", $brand_selected);
+        }
+        if ($min_price >= 0 && $max_price > 0) {
+            if ($price_view == 'price_desc') {
+                $query->whereBetween("price_desc", [$min_price, $max_price]);
+            } else {
+                $query->whereBetween("price_pvp", [$min_price, $max_price]);
+            }
+        }
+        if ($product_general_ids_array && sizeof($product_general_ids_array) > 0) {
+            $query->whereIn("id", $product_general_ids_array);
+        }
+        if ($options_aditionals && sizeof($options_aditionals) > 0 && in_array("review", $options_aditionals)) {
+            $query->has("reviews");
+        }
+        if ($search) {
+            $query->where("title", "like", "%" . $search . "%");
         }
 
         return $query;
