@@ -133,7 +133,6 @@ class HomeController extends Controller
             "discount_flash_products" => $DISCOUNT_FLASH_PRODUCTS,
         ]);
     }
-
     public function menus()
     {
         $categories_menu = Categorie::where("categorie_second_id", null)
@@ -166,7 +165,6 @@ class HomeController extends Controller
             }),
         ]);
     }
-
     public function show_product(Request $request, $slug)
     {
         $campaign_discount = $request->get("campaign_discount");
@@ -214,7 +212,6 @@ class HomeController extends Controller
             }),
         ]);
     }
-
     public function config_filter_advance()
     {
         $categories = Categorie::withCount(["product_categorie_first"])
@@ -331,6 +328,60 @@ class HomeController extends Controller
 
         return response()->json([
             "products" => ProductEcommerceCollection::make($products),
+        ]);
+    }
+    public function campaing_discount_link(Request $request)
+    {
+        $code_discount = $request->code_discount;
+
+        $is_exist_discount = Discount::where("code", $code_discount)->where("state", 1)->first();
+        if (!$is_exist_discount) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "Código de descuento no encontrado."
+            ]);
+        }
+
+        date_default_timezone_set("America/Guayaquil");
+        $discount_link = Discount::where("code", $code_discount)
+            ->where("type_campaign", 3)
+            ->where("state", 1)
+            ->where("start_date", "<=", now())
+            ->where("end_date", ">=", now())
+            ->first();
+
+        if (!$discount_link) {
+            return response()->json([
+                "message" => 403,
+                "message_text" => "Campaña de descuento no esta vigente."
+            ]);
+        }
+
+        $DISCOUNT_LINK_PRODUCTS = collect([]);        
+        if ($discount_link) {
+            foreach ($discount_link->products as $aux_product) {
+                $DISCOUNT_LINK_PRODUCTS->push(ProductEcommerceResource::make($aux_product->product));
+            }
+            foreach ($discount_link->categories as $aux_category) {
+                $products_of_categories = Product::where("state", 2)->where("categorie_first_id", $aux_category->categorie_id)->get();
+                foreach ($products_of_categories as $product) {
+                    $DISCOUNT_LINK_PRODUCTS->push(ProductEcommerceResource::make($product));
+                }
+            }
+            foreach ($discount_link->brands as $aux_brand) {
+                $products_of_brands = Product::where("state", 2)->where("brand_id", $aux_brand->brand_id)->get();
+                foreach ($products_of_brands as $product) {
+                    $DISCOUNT_LINK_PRODUCTS->push(ProductEcommerceResource::make($product));
+                }
+            }
+            // Sep 30 2024 20:20:22
+            $discount_link->start_date_format = Carbon::parse($discount_link->start_date)->format("D j F Y");
+            $discount_link->end_date_format = Carbon::parse($discount_link->end_date)->format("D j F Y");
+        }
+        
+        return response()->json([            
+            "discount" => $discount_link,
+            "products" => $DISCOUNT_LINK_PRODUCTS,
         ]);
     }
 }

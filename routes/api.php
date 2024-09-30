@@ -106,6 +106,7 @@ Route::group([
     Route::get("product/{slug}", [HomeController::class, "show_product"]);
     Route::get("config-filter-advance", [HomeController::class, "config_filter_advance"]);
     Route::post("filter-advance-product", [HomeController::class, "filter_advance_product"]);
+    Route::post("campaing-discount-link", [HomeController::class, "campaing_discount_link"]);
 
 
     Route::group([
