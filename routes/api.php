@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Product\ProductSpecificationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsNestedController;
+use App\Http\Controllers\Admin\Sale\SalesController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Ecommerce\CartController;
 use App\Http\Controllers\Ecommerce\HomeController;
@@ -95,6 +96,9 @@ Route::group([
     // Rutas de los descuentos
     Route::post("discounts/index", [DiscountController::class, "index"]);
     Route::resource("discounts", DiscountController::class);
+
+    // Rutas de las ventas
+    Route::post("sales/list", [SalesController::class, "list"]);
 });
 
 Route::group([
@@ -130,5 +134,6 @@ Route::group([
         Route::post("profile_client", [AuthController::class, "update"]);
 
         Route::resource("reviews", ReviewController::class);
+        
     });
 });

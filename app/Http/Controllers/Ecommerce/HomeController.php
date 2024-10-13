@@ -357,7 +357,7 @@ class HomeController extends Controller
             ]);
         }
 
-        $DISCOUNT_LINK_PRODUCTS = collect([]);        
+        $DISCOUNT_LINK_PRODUCTS = collect([]);
         if ($discount_link) {
             foreach ($discount_link->products as $aux_product) {
                 $DISCOUNT_LINK_PRODUCTS->push(ProductEcommerceResource::make($aux_product->product));
@@ -378,8 +378,8 @@ class HomeController extends Controller
             $discount_link->start_date_format = Carbon::parse($discount_link->start_date)->format("D j F Y");
             $discount_link->end_date_format = Carbon::parse($discount_link->end_date)->format("D j F Y");
         }
-        
-        return response()->json([            
+
+        return response()->json([
             "discount" => $discount_link,
             "products" => $DISCOUNT_LINK_PRODUCTS,
         ]);
