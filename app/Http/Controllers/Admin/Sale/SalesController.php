@@ -33,7 +33,7 @@ class SalesController extends Controller
             $categorie_third_id,
             $method_payment
         )
-            ->orderBy('id', 'desc')->paginate(10);
+            ->orderBy('id', 'desc')->paginate(25);
 
         return response()->json([
             'total' => $sales->total(),

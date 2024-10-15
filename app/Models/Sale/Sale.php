@@ -21,6 +21,7 @@ class Sale extends Model
         "price",
         "description",
         "n_transaction",
+        "state",
     ];
 
     public function setCreatedAtAttribute($value)
@@ -40,7 +41,7 @@ class Sale extends Model
     }
     public function sale_address()
     {
-        return $this->hasOne(SaleAddres::class);
+        return $this->hasMany(SaleAddres::class);
     }
     public function user()
     {
@@ -52,7 +53,7 @@ class Sale extends Model
         $query = Sale::query();
         if ($search) {
             $query->whereHas("user", function ($q) use ($search) {
-                $q->where(DB::raw("CONCAT(users.name, ' ', IFNULL(users.last_name,''),' ', users.email"), "LIKE", "%" . $search . "%");
+                $q->where(DB::raw("CONCAT(users.name, ' ', IFNULL(users.last_name,''),' ', users.email)"), "LIKE", "%" . $search . "%");
             });
         }
 

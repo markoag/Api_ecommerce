@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Product\ProductResource;
 use App\Http\Resources\Product\ProductCollection;
 use App\Models\Product\ProductImage;
+use App\Models\Sale\Sale;
 
 class ProductController extends Controller
 {
@@ -49,11 +50,14 @@ class ProductController extends Controller
             ->get();
         $brands = Brand::where("state", 1)->get();
 
+        $method_payment_list = Sale::select('method_payment')->distinct()->get();
+
         return response()->json([
             "categories_first" => $categories_first,
             "categories_seconds" => $categories_seconds,
             "categories_thirds" => $categories_thirds,
             "brands" => $brands,
+            "method_payment_list" => $method_payment_list,
         ]);
     }
 

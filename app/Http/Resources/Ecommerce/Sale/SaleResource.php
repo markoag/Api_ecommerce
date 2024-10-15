@@ -17,6 +17,10 @@ class SaleResource extends JsonResource
         return [
             "id" => $this->resource->id,
             "user_id" => $this->resource->user_id,
+            "user" => [
+                "avatar" => $this->resource->user->avatar ? env("APP_URL") . "storage/" . $this->resource->user->avatar : 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
+                "full_name" => $this->resource->user->name . " " . $this->resource->user->last_name,
+            ],
             "method_payment" => $this->resource->method_payment,
             "discount" => $this->resource->discount,
             "subtotal" => $this->resource->subtotal,
@@ -98,8 +102,28 @@ class SaleResource extends JsonResource
                     "review" => $sale_detail->review,
                 ];
             }),
-            "sale_address" => $this->resource->sale_address,
+            "sale_address" => $this->resource->sale_address->map(function ($sale_addres) {
+                return [
+                    "id" => $sale_addres->id,
+                    "province_id" => $sale_addres->province_id,
+                    "province" => $sale_addres->province ? [
+                        "id" => $sale_addres->province->id,
+                        "name" => $sale_addres->province->name,
+                    ] : null,
+                    "city_id" => $sale_addres->city_id,
+                    "city" => $sale_addres->city ? [
+                        "code" => $sale_addres->city->code,
+                        "name" => $sale_addres->city->name,
+                    ] : null,
+                    "parish_id" => $sale_addres->parish_id,
+                    "parish" => $sale_addres->parish ? [
+                        "code" => $sale_addres->parish->code,
+                        "name" => $sale_addres->parish->name,
+                    ] : null,
+                ];
+            }),
             "created_at" => $this->resource->created_at->format("Y-m-d H:i A"),
+            "state" => $this->resource->state,
         ];
     }
 }
