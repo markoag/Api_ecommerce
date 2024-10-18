@@ -101,6 +101,8 @@ Route::group([
     Route::post("sales/list", [SalesController::class, "list"]);
 });
 
+Route::get("sales/list-excel", [SalesController::class, "list_excel"]);
+
 Route::group([
     "prefix" => "ecommerce",
 ], function ($router) {
