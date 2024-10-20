@@ -25,17 +25,17 @@
                 <td>${{ $sale->total }}</td>
                 <td>{{ $sale->created_at }}</td>
                 <td>
-                    @if (isset($sale->sale_address) && count($sale->sale_address) > 0 && isset($sale->sale_address[0]->id))
-                        @if (isset($sale->sale_address[0]->province))
-                            {{ $sale->sale_address[0]->province->name }}
+                    @if (isset($sale->sale_address_list) && count($sale->sale_address_list) > 0 && isset($sale->sale_address_list[0]->id))
+                        @if (isset($sale->sale_address_list[0]->province))
+                            {{ $sale->sale_address_list[0]->province->name }}
                         @endif
                         /
-                        @if (isset($sale->sale_address[0]->city))
-                            {{ $sale->sale_address[0]->city->name }}
+                        @if (isset($sale->sale_address_list[0]->city))
+                            {{ $sale->sale_address_list[0]->city->name }}
                         @endif
                         /
-                        @if (isset($sale->sale_address[0]->parish))
-                            {{ $sale->sale_address[0]->parish->name }}
+                        @if (isset($sale->sale_address_list[0]->parish))
+                            {{ $sale->sale_address_list[0]->parish->name }}
                         @endif
                     @else
                         <!-- Si no se cumplen las condiciones, puedes mostrar algo alternativo o dejarlo vacío -->

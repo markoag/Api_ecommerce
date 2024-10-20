@@ -41,6 +41,10 @@ class Sale extends Model
     }
     public function sale_address()
     {
+        return $this->hasOne(SaleAddres::class);
+    }
+    public function sale_address_list()
+    {
         return $this->hasMany(SaleAddres::class);
     }
     public function user()

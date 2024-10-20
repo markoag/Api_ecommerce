@@ -102,7 +102,7 @@ class SaleResource extends JsonResource
                     "review" => $sale_detail->review,
                 ];
             }),
-            "sale_address" => $this->resource->sale_address->map(function ($sale_addres) {
+            "sale_address_list" => $this->resource->sale_address_list->map(function ($sale_addres) {
                 return [
                     "id" => $sale_addres->id,
                     "province_id" => $sale_addres->province_id,

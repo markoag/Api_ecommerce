@@ -102,6 +102,7 @@ Route::group([
 });
 
 Route::get("sales/list-excel", [SalesController::class, "list_excel"]);
+Route::get("sales/report-pdf/{id}", [SalesController::class, "report_pdf"]);
 
 Route::group([
     "prefix" => "ecommerce",
