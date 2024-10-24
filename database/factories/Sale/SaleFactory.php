@@ -22,8 +22,10 @@ class SaleFactory extends Factory
     public function definition(): array
     {
         $method_payment = $this->faker->randomElement(["PAYPAL","MERCADOPAGO"]);
-        //$date_sales = $this->faker->dateTimeBetween("2023-01-01 00:00:00", "2023-12-25 23:59:59");
-         $date_sales = $this->faker->dateTimeBetween("2024-01-01 00:00:00", "2024-12-25 23:59:59");
+        // Seleccionar una fecha aleatoria entre un rango de fechas
+        $date_sales = $this->faker->dateTimeBetween("2024-01-01 00:00:00", "2024-10-20 23:59:59");
+
+         //$date_sales = $this->faker->dateTimeBetween("2024-01-01 00:00:00", "2024-12-25 23:59:59");
 
 
         // $currency_payment = $this->faker->randomElement(["USD","PEN"]);
@@ -36,11 +38,12 @@ class SaleFactory extends Factory
             "price" => 0,
             "description" => $this->faker->text($maxNbChars = 300),
             "n_transaction" =>  Str::random(6),
+            "state" => $this->faker->randomElement([1,2,3,4]),
             // "currency_total" => $currency_payment == "USD" ? $this->faker->randomElement(["USD","PEN"]) : 'PEN',
             // "currency_payment" => $currency_payment,
             // "preference_id" =>  $method_payment == "MERCADOPAGO" ? Str::random(5) : NULL,
             "created_at" => $date_sales,
-            "updated_at" => $date_sales,
+            // "updated_at" => $date_sales,
         ];
     }
 }

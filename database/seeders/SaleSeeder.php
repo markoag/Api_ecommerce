@@ -35,7 +35,7 @@ class SaleSeeder extends Seeder
                 return; // Si no hay ciudades para la provincia, salta esta iteración
             }
 
-            $parish = Parish::where('city_id', $city->id)->inRandomOrder()->first();
+            $parish = Parish::where('city_id', $city->code)->inRandomOrder()->first();
             if (!$parish) {
                 return; // Si no hay parroquias para la ciudad, salta esta iteración
             }
@@ -43,8 +43,8 @@ class SaleSeeder extends Seeder
             SaleAddres::create([
                 "sale_id" => $p->id,
                 "province_id" => $province->id,
-                "city_id" => $city->id,
-                "parish_id" => $parish->id,
+                "city_id" => $city->code,
+                "parish_id" => $parish->code,
                 "company" =>  $faker->word(),
                 "main_street" =>  $faker->word(),
                 "secondary_street" =>  $faker->word(),

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Product\ProductSpecificationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsController;
 use App\Http\Controllers\Admin\Product\ProductVariationsNestedController;
+use App\Http\Controllers\Admin\Sale\KpiSaleController;
 use App\Http\Controllers\Admin\Sale\SalesController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Ecommerce\CartController;
@@ -99,6 +100,17 @@ Route::group([
 
     // Rutas de las ventas
     Route::post("sales/list", [SalesController::class, "list"]);
+
+    // Rutas de los KPIs
+    Route::group([
+        "prefix" => "kpi",
+    ], function ($router) {
+        Route::post("sales_pronvince_year", [KpiSaleController::class, "kpi_sales_province_year"]);
+        Route::post("sales_week_categories", [KpiSaleController::class, "kpi_sales_week_categories"]);
+        Route::post("sales_week_discounts", [KpiSaleController::class, "kpi_sales_week_discounts"]);
+        Route::post("sales_month_selected", [KpiSaleController::class, "kpi_sales_month_selected"]);
+        
+    });
 });
 
 Route::get("sales/list-excel", [SalesController::class, "list_excel"]);
@@ -122,7 +134,7 @@ Route::group([
         // Rutas de los carritos
         Route::post("carts/apply_coupon", [CartController::class, "apply_coupon"]);
         Route::resource("carts", CartController::class);
-        
+
         // Rutas de las direcciones de los usuarios
         Route::get("user_address/config", [UserAddressController::class, "config"]);
         Route::resource("user_address", UserAddressController::class);
@@ -130,13 +142,12 @@ Route::group([
         // Rutas de las ventas
         Route::get("sale/{id}", [SaleController::class, "show"]);
         Route::post("checkout", [SaleController::class, "store"]);
-        
+
         // Rutas de perfil de usuario
         Route::get("profile_client/me", [AuthController::class, "me"]);
         Route::get("profile_client/orders", [SaleController::class, "orders"]);
         Route::post("profile_client", [AuthController::class, "update"]);
 
         Route::resource("reviews", ReviewController::class);
-        
     });
 });
